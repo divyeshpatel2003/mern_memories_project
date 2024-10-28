@@ -11,6 +11,7 @@ export default function Form({current_id, set_current_id}) {
   const post = useSelector((state)=> (current_id ? state.posts.find((message)=> message._id === current_id) : null))
   const classes = useStyles();
   const dispatch = useDispatch()
+  const user = JSON.parse(localStorage.getItem('profile'));
 
   useEffect(()=>{
     if (post) set_post_data(post)
@@ -31,6 +32,16 @@ export default function Form({current_id, set_current_id}) {
       dispatch(update_post(current_id, post_data))
       clear()
     }
+  }
+
+  if(!user?.result?.name){
+    return (
+      <Paper className={classes.paper}>
+        <Typography variant="h6" align="center">
+          Please Sign In to create your own memories and like other's memories.
+        </Typography>
+      </Paper>
+    )
   }
 
   
