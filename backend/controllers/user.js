@@ -6,13 +6,13 @@ import jwt from "jsonwebtoken"
 const secret = "test"
 
 export const sign_in = async (req,res) => {
-    const {email, password} = req.body;
+    const {email, password, custom} = req.body;
 
     try {
         const old_user = await user.findOne({email})
         if(!old_user) return res.status(404).json({message: "User doesn't exist"})
-        
-        const is_password_correct = await bcrypt.compare(password, old_user.password)
+
+        const is_password_correct = await bcrypt.compare(custom ? password : "password", old_user.password)
 
         if(!is_password_correct) return res.status(404).json({message: "Invalid Email or Password"})
         
@@ -26,13 +26,15 @@ export const sign_in = async (req,res) => {
     }
 }
 export const sign_up = async (req,res) => {
-    const {email, password, first_name, last_name} = req.body;
+    const {email, password, first_name, last_name, custom} = req.body;
 
     try {
         const old_user = await user.findOne({email})
         if(old_user) return res.status(404).json({message: "User already exist"})
+
+        // Google login because custom is false
         
-        const hassed_password = await bcrypt.hash(password, 12);
+        const hassed_password = await bcrypt.hash(custom ? password : "password", 12);
 
         const result = await user.create({email, password: hassed_password, name: `${first_name} ${last_name}`})
 

@@ -12,20 +12,23 @@ const Navbar = () => {
     const classes = useStyles()
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const location = useLocation()
 
     const logout = () =>{
         dispatch({type: LOGOUT})
-        navigate('/')
+        navigate('/auth')
         set_user(null)
     }
 
     useEffect(()=> {
+      console.log(user?.result.picture)
       const token = user?.token
       if(token){
         const decoded_token = jwtDecode(token)
         if(decoded_token.exp * 1000 < new Date().getTime()) logout()
       }
-    })
+      set_user(JSON.parse(localStorage.getItem('profile')))
+    }, [location])
   return (
     <AppBar className={classes.appBar} position="static" color="inherit">
     <div className={classes.brandContainer}>
@@ -38,7 +41,7 @@ const Navbar = () => {
     <Toolbar className={classes.toolbar}>
         { user?.result ? (
             <div className={classes.profile}>
-                    <Avatar className={classes.purple} alt={user?.result.name} src={user?.result.imageUrl}>{user?.result.name.charAt(0)}</Avatar>
+                    <Avatar className={classes.purple} alt={user?.result.name} src={user?.result.picture}>{user?.result.name.charAt(0)}{user?.result.name.split(' ')[1].charAt(0)}</Avatar>
                     <Typography className={classes.userName} variant="h6">{user?.result.name}</Typography>
                     <Button variant="contained" className={classes.logout} onClick={logout} color="secondary">Logout</Button>
             </div>
